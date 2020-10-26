@@ -9,7 +9,7 @@ const server = require('http').createServer(app);
 
 const io = socket(server);
 
-const PORT = process.env.port || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -23,8 +23,8 @@ const clients = {};
 
 const food = ()=>{
     return {
-        x : parseInt(Math.random() * 700),
-        y: parseInt(Math.random() * 700)
+        x : parseInt(Math.random() * 650),
+        y: parseInt(Math.random() * 650)
     }
 }
 let Food = food();
