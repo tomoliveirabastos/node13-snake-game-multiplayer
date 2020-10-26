@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+    <head>
+        <style>
+            canvas{
+                position: absolute;
+                top: 0;
+                bottom:0;
+                left: 0;
+                right:0;
+                margin:  auto auto;
+                padding:20px;
+                border-radius:10px;
+                background: black;
+            }
+
+            body{
+                background-color: #fafafa;
+                font-family: consolas;
+            }
+
+            .score{
+                background: aquamarine;
+                padding:10px;
+                border-radius:5px;
+            }
+            .allScore{
+                position: absolute;
+                height: 90%;
+                width: 300px;
+                top:50px;
+                left:10;
+                border-radius: 5px;
+                background: aquamarine;
+            }
+        </style>
+
+
+        <title>Snake</title>
+        
+        <body>
+            <div class="allScore">
+                <h3 align="center">Todos score</h3>
+                <hr>
+
+                <div class="todasSnakes">
+
+                </div>
+            </div>
+            <div class="score" align='center'>
+                Score:<b id="score"></b>
+            </div>            
+        </body>
+
+        <script type="text/javascript" src="lib/socket.io.js"></script>
+
+        <script type="text/javascript" src="snake.js"></script>
+        
+        <script type="text/javascript" src="food.js"></script>
+
+        <script type="text/javascript" src="world.js"></script>
+
+        <script type="text/javascript" src="onlinePlayer.js"></script>
+
+        <script type="text/javascript">
+
+            const socket = io("/");
+
+            const canvas = document.createElement('canvas');
+    
+            const ctx = canvas.getContext('2d');
+
+            document.querySelector('body').appendChild(canvas);
+            
+            const size = 700;
+
+            canvas.height = size;
+    
+            canvas.width = size;
+
+            const onlinePlayer = new OnlinePlayer();
+
+            const snake = new Snake( Math.sqrt(size / 3) );
+    
+            const food = new Food( Math.sqrt(size / 3), socket );
+
+            const word = new World( size );
+
+            function Engine(){
+                
+                ctx.save();
+
+                ctx.clearRect(0,0, size,size)
+
+                word.observer(ctx);
+                
+                snake.run(ctx);
+
+                onlinePlayer.draw(ctx, socket.id);
+            
+                socket.emit('recebe_score', snake);
+
+                food.draw(ctx);
+
+                word.isCollide(snake, food);
+
+                ctx.restore();
+                
+                document.querySelector('#score').innerText = snake.max;
+            }
+            
+            document.addEventListener('keydown', e =>{
+                snake.lastKey = e.code;
+            });
+
+
+            socket.on('atualiza_score', data =>{
+                
+                construct_html(data);
+                
+                onlinePlayer.players = data;
+
+            });
+            
+
+            socket.on('food', data =>{
+                food.x = data.x;
+                food.y = data.y;
+            });
+
+            const construct_html = (data)=>{
+                const div = document.querySelector('.todasSnakes');
+                let html = "";
+
+                for(let item in data){
+                    html += `<b> ${item} : ${data[item].max} </b> <hr>`;
+                }
+
+                div.innerHTML = html;
+            }
+
+            setInterval(Engine, 1000/10);
+
+            
+        </script>
+    </head>
+</html>

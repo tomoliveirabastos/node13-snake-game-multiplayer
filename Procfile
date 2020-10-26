@@ -1,0 +1,1 @@
+web: sucrase-node server.js
