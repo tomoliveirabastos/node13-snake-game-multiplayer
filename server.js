@@ -1,10 +1,7 @@
-import express from 'express';
-
-import socket from 'socket.io';
-
-import process from 'process';
-
-import path from 'path';
+const express = require('express');
+const socket = require('socket.io');
+const process = require('process');
+const path = require('path');
 
 const app = express();
 
