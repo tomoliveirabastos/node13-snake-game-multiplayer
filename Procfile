@@ -1,1 +1,1 @@
-web: sucrase-node server.js
+web: npm start
